@@ -14,10 +14,11 @@ public class HomePage {
 
     // Локаторы
     private By orderButtonTop = By.className("Button_Button__ra12g");
-    private By orderButtonBottom = By.xpath("//button[@class='Button_Button__ra12g Button_Middle__1CSJM']");
-    private By faqQuestion = By.xpath("//div[@data-accordion-component='AccordionItemButton']");
-    private By faqAnswer = By.xpath("//div[@class='accordion__panel']/p"); // Локатор для ответа
+    private By orderButtonBottom = By.xpath("//div[@class='Home_RoadMap__2tal_']//button");
     private By cookieBanner = By.id("rcc-confirm-button"); // Локатор для кнопки закрытия куки-баннера
+    private String faqQuestion = "//*[text()='%s']//..";
+    private String faqAnswer = "//*[text()='%s']//../following-sibling::div/p"; // Локатор для ответа
+
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
@@ -31,16 +32,16 @@ public class HomePage {
         driver.findElement(orderButtonBottom).click();
     }
 
-    public void expandFAQQuestion(int index) {
-        WebElement question = driver.findElements(faqQuestion).get(index);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", question);
-        question.click();
+    public void expandFAQQuestion(String question) {
+        WebElement questionElement = driver.findElement(By.xpath(String.format(faqQuestion, question)));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", questionElement);
+        questionElement.click();
     }
 
-    public String getFAQAnswer(int index) {
+    public String getFAQAnswer(String question) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement answerElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("(//div[@class='accordion__panel']/p)[" + (index + 1) + "]")
+                By.xpath(String.format(faqAnswer, question))
         ));
         return answerElement.getText();
     }
